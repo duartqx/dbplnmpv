@@ -10,18 +10,18 @@ from application.commands import (
 from domain.entities import Anime
 
 
-def index():
+def index() -> None | int:
     match Index().execute():
-        case "Watch":
-            return watch(watched=False, update=True)
-        case "Update":
-            return update()
-        case "Watched":
-            return watch(watched=True, update=False)
         case "Delete":
             return delete()
         case "Purge":
             return purge()
+        case "Update":
+            return update()
+        case "Watch":
+            return watch(watched=False, update=True)
+        case "Watched":
+            return watch(watched=True, update=False)
 
 
 def watch(watched: bool = False, update: bool = False) -> bool:

@@ -37,8 +37,9 @@ def bootstrap(repository: Optional[Repository] = None) -> MessageBus:
     global bus
 
     if bus is None:
-        assert (
-            repository is not None
-        ), "Repository is required to instantiate the message bus"
+
+        assert repository is not None, "Repository is required"
+
         bus = MessageBus(repository=repository)
+
     return bus

@@ -2,14 +2,13 @@
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 from sqlite3 import Connection
-from typing import Any, Final
+from typing import Any, Final, cast
 import asyncio
 
 from api.controllers import create, index
 from application import bootstrap
 from domain.entities import Anime
 from repository.anime import AnimeRepository
-
 
 Filename = str
 
@@ -47,20 +46,18 @@ def get_args() -> DbMpvArgs:
     return parser.parse_args(namespace=DbMpvArgs())
 
 
-def listen() -> None:
-    args = get_args()
+async def main() -> None | int:
+    args: DbMpvArgs = get_args()
 
-    if args.create:
+    def create_multiple_anime_entries():
         for title in args.create:
             create(Anime(title=title, path=BASEPATH / title))
-    else:
-        index()
 
+    with Connection(DATABASE) as conn, bootstrap(AnimeRepository(conn)):
+        if args.create:
+            return create_multiple_anime_entries()
 
-async def main() -> None:
-    with Connection(database=DATABASE) as conn:
-        with bootstrap(repository=AnimeRepository(conn=conn)):
-            listen()
+        return index()
 
 
 if __name__ == "__main__":

@@ -15,14 +15,10 @@ from domain.entities import Anime
 from domain.events import WasCreated, WasUpdated, WereDeleted
 from repository.query import AnimeQuery, AnimeQueryOrder
 
-
 IndexCommands = Literal["Watch", "Update", "Watched", "Delete", "Purge", ""] | str
 
 
-T = TypeVar("T")
-
-
-class Command(ABC, Generic[T]):
+class Command[T](ABC):
     bus: MessageBus = field(init=False)
 
     def __post_init__(self) -> None:
@@ -37,8 +33,7 @@ class Command(ABC, Generic[T]):
         return mpv
 
     @abstractmethod
-    def execute(self) -> T:
-        pass
+    def execute(self) -> T: ...
 
 
 @dataclass
@@ -169,7 +164,7 @@ class Purge(Command):
             animes = [
                 anime
                 for anime in cast(list[Anime], repository.read())
-                if not anime.path.exists()
+                if anime.path.parent.exists() and not anime.path.exists()
             ]
 
             repository.delete(objs=animes)
