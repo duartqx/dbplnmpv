@@ -1,10 +1,8 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import (
-    Generic,
     Literal,
     Optional,
-    TypeVar,
     cast,
     override,
 )
@@ -43,7 +41,8 @@ class Index(Command[IndexCommands]):
     @override
     def execute(self) -> IndexCommands:
         command: IndexCommands = self.menu(
-            "\n".join(self.choices).encode(), position="horizontal"
+            "\n".join(self.choices).encode(),
+            position="horizontal",
         )
         return command
 
@@ -57,7 +56,8 @@ class ChooseAndWatch(Command[Optional[Anime]]):
         super().__post_init__()
         if self.watched:
             self.query = AnimeQuery(
-                watched=True, order=AnimeQueryOrder(direction="DESC")
+                watched=True,
+                order=AnimeQueryOrder(direction="DESC"),
             )
 
     @override
